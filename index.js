@@ -14,7 +14,7 @@ export default function ({
 } = {}) {
 	/** @type {import('@sveltejs/kit').Adapter} */
 	const adapter = {
-		name: '@sveltejs/adapter-deno',
+		name: 'svelte-adapter-deno',
 
 		async adapt(utils) {
 			const dirs = {
