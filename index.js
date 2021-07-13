@@ -16,7 +16,7 @@ export default function ({
 	const adapter = {
 		name: 'svelte-adapter-deno',
 
-		async adapt(utils) {
+		async adapt({ utils }) {
 			const dirs = {
 				files: fileURLToPath(new URL('./files', import.meta.url)),
 				server: join('.svelte-kit', 'output', 'server'),
