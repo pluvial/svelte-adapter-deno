@@ -1,5 +1,9 @@
 {
 	"name": "svelte-adapter-deno",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
+	},
 	"version": "0.2.1",
 	"type": "module",
 	"exports": {
@@ -7,11 +11,7 @@
 	},
 	"main": "index.js",
 	"types": "index.d.ts",
-	"files": [
-		"files",
-		"index.d.ts",
-		"deps.ts"
-	],
+	"files": ["files", "index.d.ts", "deps.ts"],
 	"scripts": {
 		"dev": "rollup -cw",
 		"build": "rollup -c",
@@ -19,6 +19,10 @@
 		"format": "prettier --write . --ignore-path .gitignore",
 		"check-format": "prettier --check . --ignore-path .gitignore",
 		"prepublishOnly": "npm run build"
+	},
+	"dependencies": {
+		"esbuild": "^0.12.5",
+		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^17.1.0",
