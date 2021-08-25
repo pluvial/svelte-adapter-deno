@@ -1,14 +1,15 @@
+import { init, render } from '../output/server/app.js';
+import { path, host, port } from './env.js';
 import { createServer } from './server.js';
-import { render } from './app.js';
 
-const hostname = Deno.env.get('HOST') ?? '0.0.0.0';
-const port = Deno.env.get('PORT') ?? 3000;
+init();
 
-const instance = createServer({ render }).listen({ hostname, port }, (err) => {
+const addr = path || `${host}:${port}`;
+const instance = createServer({ render }).listen(addr, (err) => {
 	if (err) {
-		console.log('error', err);
+		console.error('error', err);
 	} else {
-		console.log(`Listening on port ${port}`);
+		console.log(`Listening on http://${addr}`);
 	}
 });
 

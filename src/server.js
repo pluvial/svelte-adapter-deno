@@ -11,20 +11,27 @@ const paths = {
 };
 
 export function createServer({ render }) {
-	const mutable = (dir) =>
-		serveStatic(dir, {
-			etag: true,
-			maxAge: 0
-		});
-
 	const prerendered_handler = existsSync(paths.prerendered)
-		? mutable(paths.prerendered)
+		? serveStatic(paths.prerendered, {
+				etag: true,
+				maxAge: 0
+				// gzip: true,
+				// brotli: true
+		  })
 		: noop_handler;
 
 	const assets_handler = existsSync(paths.assets)
 		? serveStatic(paths.assets, {
 				maxAge: 31536000,
 				immutable: true
+				// setHeaders: (res, pathname) => {
+				// 	// @ts-expect-error - dynamically replaced with define
+				// 	if (pathname.startsWith(/* eslint-disable-line no-undef */ APP_DIR)) {
+				// 		res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+				// 	}
+				// },
+				// gzip: true,
+				// brotli: true
 		  })
 		: noop_handler;
 
@@ -35,12 +42,22 @@ export function createServer({ render }) {
 		prerendered_handler,
 		async (req, res) => {
 			const parsed = new URL(req.url || '', 'http://localhost');
+
+			let body;
+
+			try {
+				body = await getRawBody(req);
+			} catch (err) {
+				res.statusCode = err.status || 400;
+				return res.end(err.reason || 'Invalid request body');
+			}
+
 			const rendered = await render({
 				method: req.method,
 				headers: headers_to_object(req.headers), // TODO: what about repeated headers, i.e. string[]
 				path: parsed.pathname,
-				rawBody: await getRawBody(req),
-				query: parsed.searchParams
+				query: parsed.searchParams,
+				rawBody: body
 			});
 
 			if (rendered) {

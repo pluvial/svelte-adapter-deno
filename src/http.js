@@ -1,6 +1,6 @@
-import { readAll } from 'https://deno.land/std@0.95.0/io/mod.ts';
+import { readAll } from 'https://deno.land/std@0.106.0/io/mod.ts';
 
-// import type { ServerRequest } from 'https://deno.land/std@0.95.0/http/server.ts';
+// import type { ServerRequest } from 'https://deno.land/std@0.106.0/http/server.ts';
 
 /**
  * Converts request headers from Headers to a plain key-value object, as used in node
@@ -11,7 +11,7 @@ export const headers_to_object = (headers) => Object.fromEntries(headers.entries
 
 /**
  * @param {ServerRequest} req Deno server request object
- * @returns {Promise<string>} Resolves with the request body decoded to a string
+ * @returns {Promise<null | Uint8Array>} Resolves with the request body raw buffer
  */
 export async function getRawBody(req) {
 	const { headers } = req;
@@ -23,13 +23,5 @@ export async function getRawBody(req) {
 	}
 
 	const data = await readAll(req.body);
-
-	// return raw buffer for octet-stream content-type
-	if (type === 'application/octet-stream') {
-		return data.buffer;
-	}
-
-	// decode the raw buffer into a string
-	const decoder = new TextDecoder(req.headers.get('content-encoding') ?? 'utf-8');
-	return decoder.decode(data);
+  return data;
 }
