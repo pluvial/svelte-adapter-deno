@@ -4,14 +4,14 @@
 		"type": "git",
 		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
 	},
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"type": "module",
 	"exports": {
 		"import": "./index.js"
 	},
 	"main": "index.js",
 	"types": "index.d.ts",
-	"files": ["files", "index.d.ts", "deps.ts"],
+	"files": ["files", "index.d.ts", "deps.ts", "tsconfig.deno.json"],
 	"scripts": {
 		"dev": "rollup -cw",
 		"build": "rollup -c",
