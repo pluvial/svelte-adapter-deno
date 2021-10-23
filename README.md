@@ -24,7 +24,7 @@ export default {
 After building the server (`npm run build`), use the following command to start:
 
 ```sh
-$ deno run --allow-env --allow-read --allow-net path/to/build/server.js
+$ deno run --allow-env --allow-read --allow-net --config tsconfig.deno.json path/to/build/index.js
 ```
 
 The server needs at least the following permissions to run:
@@ -32,6 +32,15 @@ The server needs at least the following permissions to run:
 - `allow-env` - allow environment access, to support runtime configuration via runtime variables (can be further restricted to include just the necessary variables)
 - `allow-read` - allow file system read access (can be further restricted to include just the necessary directories)
 - `allow-net` - allow network access (can be further restricted to include just the necessary domains)
+
+Additionally, a tsconfig.json should be specified to support upstream dependencies, which currently need `"allowSyntheticDefaultImports": true` in the typescript compiler options.
+An example is included in this package, which should be accessible at `node_modules/svelte-adapter-deno/tsconfig.deno.json`:
+
+```sh
+$ deno run --allow-env --allow-read --allow-net -c node_modules/svelte-adapter-deno/tsconfig.deno.json build/index.js
+```
+
+It fails the first time it runs, but should work correctly afterwards.
 
 ## Options
 
