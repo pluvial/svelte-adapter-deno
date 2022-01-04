@@ -1,16 +1,15 @@
 import { app, dirname, existsSync, fromFileUrl, join, serveStatic } from './deps.ts';
 import { getRawBody, headers_to_object } from './http.js';
 
-// App is a dynamic file built from the application layer.
-
 const __dirname = dirname(fromFileUrl(import.meta.url));
 const noop_handler = (_req, _res, next) => next();
 const paths = {
-	assets: join(__dirname, '/assets'),
+	client: join(__dirname, '/client'),
+	static: join(__dirname, '/static'),
 	prerendered: join(__dirname, '/prerendered')
 };
 
-export function createServer({ render }) {
+export function createServer(kitApp) {
 	const prerendered_handler = existsSync(paths.prerendered)
 		? serveStatic(paths.prerendered, {
 				etag: true,
@@ -20,8 +19,8 @@ export function createServer({ render }) {
 		  })
 		: noop_handler;
 
-	const assets_handler = existsSync(paths.assets)
-		? serveStatic(paths.assets, {
+	const client_handler = existsSync(paths.client)
+		? serveStatic(paths.client, {
 				maxAge: 31536000,
 				immutable: true
 				// setHeaders: (res, pathname) => {
@@ -35,13 +34,18 @@ export function createServer({ render }) {
 		  })
 		: noop_handler;
 
+	const static_handler = existsSync(paths.static)
+		? serveStatic(paths.static, { maxAge: 0 })
+		: noop_handler;
+
 	const server = app().use(
 		// TODO: handle response compression
 		// compression({ threshold: 0 }),
-		assets_handler,
+		client_handler,
+		static_handler,
 		prerendered_handler,
 		async (req, res) => {
-			const parsed = new URL(req.url || '', 'http://localhost');
+			const url = new URL(req.url || '', 'http://localhost');
 
 			let body;
 
@@ -52,11 +56,10 @@ export function createServer({ render }) {
 				return res.end(err.reason || 'Invalid request body');
 			}
 
-			const rendered = await render({
+			const rendered = await kitApp.render({
 				method: req.method,
 				headers: headers_to_object(req.headers), // TODO: what about repeated headers, i.e. string[]
-				path: parsed.pathname,
-				query: parsed.searchParams,
+				url,
 				rawBody: body
 			});
 

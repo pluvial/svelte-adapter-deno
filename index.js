@@ -1,21 +1,14 @@
-import { join } from 'path';
-import { fileURLToPath } from 'url';
-import esbuild from 'esbuild';
-
-import {
-	createReadStream,
-	createWriteStream,
-	existsSync,
-	// readFileSync,
-	statSync,
-	writeFileSync
-} from 'fs';
+import { createReadStream, createWriteStream, existsSync, statSync, writeFileSync } from 'fs';
 import { pipeline } from 'stream';
-import glob from 'tiny-glob';
+import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 import zlib from 'zlib';
+import esbuild from 'esbuild';
+import glob from 'tiny-glob';
 
 const pipe = promisify(pipeline);
+
+const files = fileURLToPath(new URL('./files', import.meta.url));
 
 /**
  * @typedef {import('esbuild').BuildOptions} BuildOptions
@@ -32,60 +25,64 @@ export default function ({
 	return {
 		name: 'svelte-adapter-deno',
 
-		async adapt({ utils, config }) {
+		async adapt(builder) {
+			builder.rimraf(out);
+
 			const dirs = {
-				files: fileURLToPath(new URL('./files', import.meta.url)),
-				static: join(out, 'assets')
+				deno: builder.getBuildDirectory('deno')
 			};
 
-			utils.log.minor('Copying assets');
-			utils.copy_client_files(dirs.static);
-			utils.copy_static_files(dirs.static);
+			builder.log.minor('Copying assets');
+			builder.writeClient(`${out}/client`);
+			builder.writeServer(`${dirs.deno}/server`);
+			builder.writeStatic(`${out}/static`);
 
-			if (precompress) {
-				utils.log.minor('Compressing assets');
-				await compress(dirs.static);
-			}
+			builder.log.minor('Prerendering static pages');
+			await builder.prerender({
+				dest: `${out}/prerendered`
+			});
 
-			utils.log.minor(`Copying deps.ts: ${deps}`);
-			utils.copy(deps, '.svelte-kit/deno/deps.ts');
-
-			utils.log.minor('Building server');
-			utils.copy(dirs.files, '.svelte-kit/deno');
 			writeFileSync(
-				'.svelte-kit/deno/env.js',
-				`export const path = Deno.env.get(${JSON.stringify(
-					path_env
-				)}) ?? false;\nexport const host = Deno.env.get(${JSON.stringify(
-					host_env
-				)}) ?? '0.0.0.0';\nexport const port = Deno.env.get(${JSON.stringify(
-					port_env
-				)}) ?? (!path && 3000);`
+				`${dirs.deno}/manifest.js`,
+				`export const manifest = ${builder.generateManifest({
+					relativePath: './server'
+				})};\n`
 			);
+
+			builder.log.minor(`Copying deps.ts: ${deps}`);
+			builder.copy(deps, `${dirs.deno}/deps.ts`);
+
+			builder.log.minor('Building server');
+
+			builder.copy(`${files}/index.js`, `${dirs.deno}/index.js`, {
+				replace: {
+					APP: './server/app.js',
+					MANIFEST: './manifest.js',
+					PATH_ENV: JSON.stringify(path_env),
+					HOST_ENV: JSON.stringify(host_env),
+					PORT_ENV: JSON.stringify(port_env)
+				}
+			});
+
 			/** @type {BuildOptions} */
 			const defaultOptions = {
-				entryPoints: ['.svelte-kit/deno/index.js'],
-				outfile: join(out, 'index.js'),
+				entryPoints: [`${dirs.deno}/index.js`],
+				outfile: `${out}/index.js`,
 				bundle: true,
 				// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
 				format: 'esm',
 				// platform: 'browser'
 				platform: 'neutral',
 				// inject: [join(dirs.files, 'shims.js')],
-				define: {
-					APP_DIR: `"/${config.kit.appDir}/"`
-				},
 				sourcemap: 'external'
 			};
 			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;
 			await esbuild.build(buildOptions);
 
-			utils.log.minor('Prerendering static pages');
-			await utils.prerender({
-				dest: `${out}/prerendered`
-			});
-			if (precompress && existsSync(`${out}/prerendered`)) {
-				utils.log.minor('Compressing prerendered pages');
+			if (precompress) {
+				builder.log.minor('Compressing assets');
+				await compress(`${out}/client`);
+				await compress(`${out}/static`);
 				await compress(`${out}/prerendered`);
 			}
 		}
@@ -96,6 +93,10 @@ export default function ({
  * @param {string} directory
  */
 async function compress(directory) {
+	if (!existsSync(directory)) {
+		return;
+	}
+
 	const files = await glob('**/*.{html,js,json,css,svg,xml}', {
 		cwd: directory,
 		dot: true,
