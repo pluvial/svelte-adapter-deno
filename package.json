@@ -11,7 +11,12 @@
 	},
 	"main": "index.js",
 	"types": "index.d.ts",
-	"files": ["files", "index.d.ts", "deps.ts", "tsconfig.deno.json"],
+	"files": [
+		"files",
+		"index.d.ts",
+		"deps.ts",
+		"tsconfig.deno.json"
+	],
 	"scripts": {
 		"dev": "rollup -cw",
 		"build": "rollup -c",
@@ -21,21 +26,22 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"esbuild": "^0.12.5",
+		"esbuild": "^0.14.10",
 		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^17.1.0",
+		"@rollup/plugin-commonjs": "^21.0.1",
 		"@rollup/plugin-json": "^4.1.0",
-		"@rollup/plugin-node-resolve": "^11.2.1",
+		"@rollup/plugin-node-resolve": "^13.1.2",
 		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.6.0",
-		"@sveltejs/kit": "^1.0.0-next.125",
-		"@typescript-eslint/eslint-plugin": "^4.22.1",
-		"@typescript-eslint/parser": "^4.22.1",
-		"eslint": "^7.25.0",
-		"eslint-plugin-import": "^2.22.1",
-		"prettier": "2.2.1",
-		"rollup": "^2.41.1",
-		"typescript": "^4.2.3"
+		"@sveltejs/kit": "^1.0.0-next.216",
+		"@typescript-eslint/eslint-plugin": "^5.9.0",
+		"@typescript-eslint/parser": "^5.9.0",
+		"eslint": "^8.6.0",
+		"eslint-plugin-import": "^2.25.4",
+		"eslint-plugin-svelte3": "^3.2.1",
+		"prettier": "^2.5.1",
+		"rollup": "^2.63.0",
+		"typescript": "^4.5.4"
 	}
 }
