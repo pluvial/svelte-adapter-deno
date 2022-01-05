@@ -2,48 +2,32 @@ import { app, dirname, existsSync, fromFileUrl, join, serveStatic } from './deps
 import { getRawBody, headers_to_object } from './http.js';
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
-const noop_handler = (_req, _res, next) => next();
-const paths = {
-	client: join(__dirname, '/client'),
-	static: join(__dirname, '/static'),
-	prerendered: join(__dirname, '/prerendered')
-};
+
+/**
+ * @param {string} path
+ * @param {number} max_age
+ * @param {boolean} immutable
+ */
+function serve(path, max_age, immutable = false) {
+	return existsSync(path)
+		? serveStatic(path, {
+				etag: true,
+				maxAge: max_age,
+				immutable
+				// gzip: true,
+				// brotli: true
+		  })
+		: // noop handler
+		  (_req, _res, next) => next();
+}
 
 export function createServer(kitApp) {
-	const prerendered_handler = existsSync(paths.prerendered)
-		? serveStatic(paths.prerendered, {
-				etag: true,
-				maxAge: 0
-				// gzip: true,
-				// brotli: true
-		  })
-		: noop_handler;
-
-	const client_handler = existsSync(paths.client)
-		? serveStatic(paths.client, {
-				maxAge: 31536000,
-				immutable: true
-				// setHeaders: (res, pathname) => {
-				// 	// @ts-expect-error - dynamically replaced with define
-				// 	if (pathname.startsWith(/* eslint-disable-line no-undef */ APP_DIR)) {
-				// 		res.setHeader('cache-control', 'public, max-age=31536000, immutable');
-				// 	}
-				// },
-				// gzip: true,
-				// brotli: true
-		  })
-		: noop_handler;
-
-	const static_handler = existsSync(paths.static)
-		? serveStatic(paths.static, { maxAge: 0 })
-		: noop_handler;
-
 	const server = app().use(
 		// TODO: handle response compression
 		// compression({ threshold: 0 }),
-		client_handler,
-		static_handler,
-		prerendered_handler,
+		serve(join(__dirname, '/client'), 31536000, true),
+		serve(join(__dirname, '/static'), 0),
+		serve(join(__dirname, '/prerendered'), 0),
 		async (req, res) => {
 			const url = new URL(req.url || '', 'http://localhost');
 
