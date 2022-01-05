@@ -23,5 +23,5 @@ export async function getRawBody(req) {
 	}
 
 	const data = await readAll(req.body);
-  return data;
+	return data;
 }
