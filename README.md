@@ -24,7 +24,11 @@ export default {
 After building the server (`npm run build`), use the following command to start:
 
 ```sh
-$ deno run --allow-env --allow-read --allow-net --config tsconfig.deno.json path/to/build/index.js
+# with the default build directory
+deno run --allow-env --allow-read --allow-net --no-check build/index.js
+
+# with a custom build directory
+deno run --allow-env --allow-read --allow-net --no-check path/to/build/index.js
 ```
 
 The server needs at least the following permissions to run:
@@ -33,20 +37,21 @@ The server needs at least the following permissions to run:
 - `allow-read` - allow file system read access (can be further restricted to include just the necessary directories)
 - `allow-net` - allow network access (can be further restricted to include just the necessary domains)
 
-Additionally, a tsconfig.json should be specified to support upstream dependencies, which currently need `"allowSyntheticDefaultImports": true` in the typescript compiler options.
-An example is included in this package, which should be accessible at `node_modules/svelte-adapter-deno/tsconfig.deno.json`:
+Additionally, `--no-check` is used to avoid problems with typechecking upstream dependencies.
 
-```sh
-$ deno run --allow-env --allow-read --allow-net -c node_modules/svelte-adapter-deno/tsconfig.deno.json build/index.js
-```
+<details>
+	<summary>Related Deno issues</summary>
 
-It fails the first time it runs, but should work correctly afterwards.
+- [Skip type checking for modules outside of user's control #9704](https://github.com/denoland/deno/issues/9704)
+- [Make TypeScript diagnostics non-fatal #9737](https://github.com/denoland/deno/issues/9737)
+- [Skip type checking by default #11340](https://github.com/denoland/deno/issues/11340)
+</details>
 
 ## Options
 
 ### out
 
-The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-env --allow-read --allow-net build/server.js` would start the server locally after it has been created.
+The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-env --allow-read --allow-net build/index.js` would start the server locally after it has been created.
 
 ### precompress
 
@@ -90,13 +95,10 @@ The default options for this version are as follows:
 ```js
 {
   entryPoints: ['.svelte-kit/deno/index.js'],
-  outfile: 'pathTo/index.js',
+  outfile: 'build/index.js',
   bundle: true,
   format: 'esm',
   platform: 'neutral',
-  define: {
-    APP_DIR: `"/${config.kit.appDir}/"`
-  },
   sourcemap: 'external'
 }
 ```

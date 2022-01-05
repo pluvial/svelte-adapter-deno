@@ -14,8 +14,7 @@
 	"files": [
 		"files",
 		"index.d.ts",
-		"deps.ts",
-		"tsconfig.deno.json"
+		"deps.ts"
 	],
 	"scripts": {
 		"dev": "rollup -cw",

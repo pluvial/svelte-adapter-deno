@@ -26,15 +26,14 @@ export default function ({
 		name: 'svelte-adapter-deno',
 
 		async adapt(builder) {
-			builder.rimraf(out);
+			const tmp = builder.getBuildDirectory('deno');
 
-			const dirs = {
-				deno: builder.getBuildDirectory('deno')
-			};
+			builder.rimraf(out);
+			builder.rimraf(tmp);
 
 			builder.log.minor('Copying assets');
 			builder.writeClient(`${out}/client`);
-			builder.writeServer(`${dirs.deno}/server`);
+			builder.writeServer(`${tmp}/server`);
 			builder.writeStatic(`${out}/static`);
 
 			builder.log.minor('Prerendering static pages');
@@ -43,18 +42,18 @@ export default function ({
 			});
 
 			writeFileSync(
-				`${dirs.deno}/manifest.js`,
+				`${tmp}/manifest.js`,
 				`export const manifest = ${builder.generateManifest({
 					relativePath: './server'
 				})};\n`
 			);
 
 			builder.log.minor(`Copying deps.ts: ${deps}`);
-			builder.copy(deps, `${dirs.deno}/deps.ts`);
+			builder.copy(deps, `${tmp}/deps.ts`);
 
 			builder.log.minor('Building server');
 
-			builder.copy(`${files}/index.js`, `${dirs.deno}/index.js`, {
+			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
 				replace: {
 					APP: './server/app.js',
 					MANIFEST: './manifest.js',
@@ -66,7 +65,7 @@ export default function ({
 
 			/** @type {BuildOptions} */
 			const defaultOptions = {
-				entryPoints: [`${dirs.deno}/index.js`],
+				entryPoints: [`${tmp}/index.js`],
 				outfile: `${out}/index.js`,
 				bundle: true,
 				// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
