@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true
-  }
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true
+	}
 }

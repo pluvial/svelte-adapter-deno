@@ -10,5 +10,5 @@ export default {
 		sourcemap: true
 	},
 	plugins: [nodeResolve(), commonjs(), json()],
-	external: ['../output/server/app.js', './deps.ts', './env.js', ...require('module').builtinModules]
+	external: ['../output/server/app.js', './deps.ts', ...require('module').builtinModules]
 };
