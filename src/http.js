@@ -1,6 +1,4 @@
-import { readAll } from 'https://deno.land/std@0.106.0/io/mod.ts';
-
-// import type { ServerRequest } from 'https://deno.land/std@0.106.0/http/server.ts';
+import { readAll } from './deps.ts';
 
 /**
  * Converts request headers from Headers to a plain key-value object, as used in node
@@ -10,7 +8,7 @@ import { readAll } from 'https://deno.land/std@0.106.0/io/mod.ts';
 export const headers_to_object = (headers) => Object.fromEntries(headers.entries());
 
 /**
- * @param {ServerRequest} req Deno server request object
+ * @param {Request} req Deno server request object
  * @returns {Promise<null | Uint8Array>} Resolves with the request body raw buffer
  */
 export async function getRawBody(req) {
