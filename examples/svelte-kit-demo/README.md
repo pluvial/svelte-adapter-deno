@@ -22,7 +22,8 @@ npm run build
 ## Starting
 
 ```sh
-deno run --allow-env --allow-read --allow-net -c node_modules/svelte-adapter-deno/tsconfig.deno.json build/index.js
-```
+npm start
 
-It fails the first time it runs, but should work correctly afterwards.
+# or run deno manually
+deno run --allow-env --allow-read --allow-net --no-check build/index.js
+```
