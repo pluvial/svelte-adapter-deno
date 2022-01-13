@@ -37,7 +37,7 @@ export default function ({
 			builder.writeStatic(`${out}/static`);
 
 			builder.log.minor('Prerendering static pages');
-			await builder.prerender({
+			const { paths } = await builder.prerender({
 				dest: `${out}/prerendered`
 			});
 
@@ -45,7 +45,7 @@ export default function ({
 				`${tmp}/manifest.js`,
 				`export const manifest = ${builder.generateManifest({
 					relativePath: './server'
-				})};\n`
+				})};\n\nexport const prerendered = new Set(${JSON.stringify(paths)});\n`
 			);
 
 			builder.log.minor(`Copying deps.ts: ${deps}`);
