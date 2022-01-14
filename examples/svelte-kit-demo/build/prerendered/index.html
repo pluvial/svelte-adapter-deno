@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="description" content="Svelte demo app" />
+		<link rel="icon" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Home</title>
+
+		
+
+		<link rel="stylesheet" href="/_app/assets/start-61d1577b.css">
+		<link rel="stylesheet" href="/_app/assets/pages/__layout.svelte-a7861b78.css">
+		<link rel="stylesheet" href="/_app/assets/pages/index.svelte-c63fe1c6.css">
+		<link rel="modulepreload" href="/_app/start-3758ce37.js">
+		<link rel="modulepreload" href="/_app/chunks/vendor-8847cb1d.js">
+		<link rel="modulepreload" href="/_app/pages/__layout.svelte-830e1419.js">
+		<link rel="modulepreload" href="/_app/pages/index.svelte-f4190a75.js">
+
+		<script type="module">
+			import { start } from "/_app/start-3758ce37.js";
+			start({
+				target: document.querySelector("#svelte"),
+				paths: {"base":"","assets":""},
+				session: {},
+				route: true,
+				spa: false,
+				trailing_slash: "never",
+				hydrate: {
+					status: 200,
+					error: null,
+					nodes: [
+						import("/_app/pages/__layout.svelte-830e1419.js"),
+						import("/_app/pages/index.svelte-f4190a75.js")
+					],
+					url: new URL("http://prerender/"),
+					params: {}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="svelte">
+
+
+<header class="svelte-t2wq17"><div class="corner svelte-t2wq17"><a href="https://kit.svelte.dev" class="svelte-t2wq17"><img src="/_app/assets/svelte-logo-87df40b8.svg" alt="SvelteKit" class="svelte-t2wq17"></a></div>
+
+	<nav class="svelte-t2wq17"><svg viewBox="0 0 2 3" aria-hidden="true" class="svelte-t2wq17"><path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" class="svelte-t2wq17"></path></svg>
+		<ul class="svelte-t2wq17"><li class="svelte-t2wq17 active"><a sveltekit:prefetch href="/" class="svelte-t2wq17">Home</a></li>
+			<li class="svelte-t2wq17"><a sveltekit:prefetch href="/about" class="svelte-t2wq17">About</a></li>
+			<li class="svelte-t2wq17"><a sveltekit:prefetch href="/todos" class="svelte-t2wq17">Todos</a></li></ul>
+		<svg viewBox="0 0 2 3" aria-hidden="true" class="svelte-t2wq17"><path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" class="svelte-t2wq17"></path></svg></nav>
+
+	<div class="corner svelte-t2wq17"></div>
+</header>
+
+<main class="svelte-1izrdc8">
+
+<section class="svelte-mjk9ig"><h1 class="svelte-mjk9ig"><div class="welcome svelte-mjk9ig"><picture><source srcset="svelte-welcome.webp" type="image/webp">
+				<img src="svelte-welcome.png" alt="Welcome" class="svelte-mjk9ig"></picture></div>
+
+		to your new<br>SvelteKit app
+	</h1>
+
+	<h2>try editing <strong>src/routes/index.svelte</strong></h2>
+
+	<div class="counter svelte-139m1ow"><button aria-label="Decrease the counter by one" class="svelte-139m1ow"><svg aria-hidden="true" viewBox="0 0 1 1" class="svelte-139m1ow"><path d="M0,0.5 L1,0.5" class="svelte-139m1ow"></path></svg></button>
+
+	<div class="counter-viewport svelte-139m1ow"><div class="counter-digits svelte-139m1ow" style="transform: translate(0, 0%)"><strong style="top: -100%" aria-hidden="true" class="svelte-139m1ow">1</strong>
+			<strong class="svelte-139m1ow">0</strong></div></div>
+
+	<button aria-label="Increase the counter by one" class="svelte-139m1ow"><svg aria-hidden="true" viewBox="0 0 1 1" class="svelte-139m1ow"><path d="M0,0.5 L1,0.5 M0.5,0 L0.5,1" class="svelte-139m1ow"></path></svg></button>
+</div>
+</section></main>
+
+<footer class="svelte-1izrdc8"><p>visit <a href="https://kit.svelte.dev" class="svelte-1izrdc8">kit.svelte.dev</a> to learn SvelteKit</p>
+</footer>
+
+</div>
+	</body>
+</html>
