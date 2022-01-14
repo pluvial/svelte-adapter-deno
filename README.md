@@ -25,10 +25,10 @@ After building the server (`npm run build`), use the following command to start:
 
 ```sh
 # with the default build directory
-deno run --allow-env --allow-read --allow-net --no-check build/index.js
+deno run --allow-env --allow-read --allow-net build/index.js
 
 # with a custom build directory
-deno run --allow-env --allow-read --allow-net --no-check path/to/build/index.js
+deno run --allow-env --allow-read --allow-net path/to/build/index.js
 ```
 
 The server needs at least the following permissions to run:
@@ -37,7 +37,7 @@ The server needs at least the following permissions to run:
 - `allow-read` - allow file system read access (can be further restricted to include just the necessary directories)
 - `allow-net` - allow network access (can be further restricted to include just the necessary domains)
 
-Additionally, `--no-check` is used to avoid problems with typechecking upstream dependencies.
+Additionally, `--no-check` can be used if deno complains while typechecking upstream dependencies.
 
 <details>
 	<summary>Related Deno issues</summary>

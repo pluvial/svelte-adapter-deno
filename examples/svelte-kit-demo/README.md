@@ -25,5 +25,5 @@ npm run build
 npm start
 
 # or run deno manually
-deno run --allow-env --allow-read --allow-net --no-check build/index.js
+deno run --allow-env --allow-read --allow-net build/index.js
 ```
