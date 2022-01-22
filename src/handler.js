@@ -1,5 +1,4 @@
-import { dirname, fromFileUrl, join, readAll, readerFromStreamReader } from './deps.ts';
-import { contentType } from './content-types.js';
+import { dirname, serveFile, fromFileUrl, join, readAll, readerFromStreamReader } from './deps.ts';
 
 import { App } from 'APP';
 import { manifest, prerendered } from 'MANIFEST';
@@ -10,21 +9,33 @@ const __dirname = dirname(fromFileUrl(import.meta.url));
 
 const prefix = `/${manifest.appDir}/`;
 
-export async function handler(ctx, next) {
+/**
+ * 
+ * @param {Request} request original request object
+ * @param {string} path folder which contains file
+ * @param {string} file it can be nested in sub folders too
+ * @returns {Promise<Response>}
+ */
+async function sendFile(request, path, file) {
+	const filename = join(__dirname, path, file)
+	return await serveFile(request, filename) 
+}
+/**
+ * 
+ * @param {Request} request original request object
+ * @returns {Promise<Response>}
+ */
+export async function handler(request) {
 	// generated assets
-	if (ctx.request.url.pathname.startsWith(prefix)) {
-		return await ctx.send({
-			root: join(__dirname, 'client'),
-			headers: {
-				'cache-control': 'public, immutable, max-age=31536000',
-				// 'content-type': res.headers.get('content-type')
-				'content-type': contentType(ctx.request.url.pathname)
-			}
-		});
+	const url = new URL(request.url)
+	if (url.pathname.startsWith(prefix)) {
+		const response = await sendFile(request, 'client', url.pathname)
+		response.headers.append('cache-control', 'public, immutable, max-age=31536000')
+		return response;
 	}
 
 	// prerendered pages and index.html files
-	const pathname = ctx.request.url.pathname.replace(/\/$/, '');
+	const pathname = url.pathname.replace(/\/$/, '');
 	let file = pathname.substring(1);
 
 	try {
@@ -34,83 +45,25 @@ export async function handler(ctx, next) {
 	}
 
 	if (manifest.assets.has(file)) {
-		return await ctx.send({ root: join(__dirname, 'static') });
+		return await sendFile(request, 'static', file);
 	}
 	file += '/index.html';
 	if (manifest.assets.has(file)) {
-		return await ctx.send({ path: file, root: join(__dirname, 'static') });
+		return await sendFile(request, 'static', file);
 	}
 	if (prerendered.has(pathname || '/')) {
-		return await ctx.send({ path: file, root: join(__dirname, 'prerendered') });
+		return await sendFile(request, 'prerendered', file);
 	}
 
 	// dynamically-generated pages
-	const req = ctx.request.originalRequest;
 
-	let body;
-	try {
-		body = await getRawBody(req);
-	} catch (err) {
-		console.error(err);
-		ctx.response.status = err.status || 400;
-		ctx.response.body = err.reason || 'Invalid request body';
-		return await next();
-	}
+	const rendered = await app.render(request);
 
-	const rendered = await app.render({
-		method: req.method,
-		headers: headers_to_object(req.headers), // TODO: what about repeated headers, i.e. string[]
-		url: req.url,
-		rawBody: body
-	});
+
 
 	if (rendered) {
-		ctx.response.status = rendered.status;
-		ctx.response.headers = make_headers(rendered.headers);
-		ctx.response.body = rendered.body;
+		return rendered
 	} else {
-		ctx.response.status = 404;
-		ctx.response.body = 'Not found';
+		return new Response('Not found', {status: 404})
 	}
-}
-
-/**
- * Converts request headers from Headers to a plain key-value object, as used in node
- * @param {Headers} headers Browser/Deno Headers object
- * @returns {object} Plain key-value headers object
- */
-const headers_to_object = (headers) => Object.fromEntries(headers.entries());
-
-/** @param {Record<string, string | string[]>} headers */
-function make_headers(headers) {
-	const result = new Headers();
-	for (const header in headers) {
-		const value = headers[header];
-		if (typeof value === 'string') {
-			result.set(header, value);
-			continue;
-		}
-		for (const sub of value) {
-			result.append(header, sub);
-		}
-	}
-	return result;
-}
-
-/**
- * @param {Request} req Deno server request object
- * @returns {Promise<null | Uint8Array>} Resolves with the request body raw buffer
- */
-async function getRawBody(req) {
-	const { body, headers } = req;
-	// console.log({ body, headers });
-	// take the first content-type header
-	// TODO: is split(',') enough?
-	const type = headers.get('content-type')?.split(/,;\s*/)?.[0];
-	if (type === null || body === null) {
-		return null;
-	}
-
-	const data = await readAll(readerFromStreamReader(req.body.getReader()));
-	return data;
 }

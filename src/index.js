@@ -1,20 +1,19 @@
-import { Application } from './deps.ts';
 import { handler } from './handler.js';
 
-export const path = Deno.env.get(PATH_ENV) ?? false;
-export const host = Deno.env.get(HOST_ENV) ?? '0.0.0.0';
-export const port = Deno.env.get(PORT_ENV) ?? (!path && 3000);
+export let path = Deno.env.get(PATH_ENV) ?? false;
+export let host = Deno.env.get(HOST_ENV) ?? '0.0.0.0';
+export let port = Deno.env.get(PORT_ENV) ?? (!path && 3000);
 
-// TODO: add compression middleware
-const server = new Application().use(handler);
+if (path) {
+	host = path.split(':')[0];
+	port = Number(path.split(':')[1]);
+}
+const server = Deno.listen({ port: port, hostname: host });
 
-server.addEventListener('listen', () => {
-	console.log(`Listening on http://${addr}`);
-});
-
-const addr = path || `${host}:${port}`;
-server.listen(addr).catch((err) => {
-	console.error('error', err);
-});
+for await (const conn of server) {
+	for await (const { request, respondWith } of Deno.serveHttp(conn)) {
+		respondWith(handler(request));
+	}
+}
 
 export { server };

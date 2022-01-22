@@ -1,8 +1,8 @@
 {
-	"name": "svelte-adapter-deno",
+	"name": "svelte-adapter-deno-mini",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
+		"url": "https://github.com/TheHadiAhmadi/svelte-adapter-deno.git"
 	},
 	"version": "0.5.0",
 	"type": "module",
