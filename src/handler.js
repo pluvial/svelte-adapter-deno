@@ -2,6 +2,7 @@ import { dirname, serveFile, fromFileUrl, join, readAll, readerFromStreamReader 
 
 import { App } from 'APP';
 import { manifest, prerendered } from 'MANIFEST';
+import { contentType } from './content-types';
 
 const app = new App(manifest);
 
@@ -16,10 +17,18 @@ const prefix = `/${manifest.appDir}/`;
  * @param {string} file it can be nested in sub folders too
  * @returns {Promise<Response>}
  */
-async function sendFile(request, path, file) {
-	const filename = join(__dirname, path, file)
-	return await serveFile(request, filename) 
-}
+ async function sendFile(request, path2, file) {
+	const filename = join("/src/build", path2, file);
+  
+	const data = await Deno.readFile(filename);
+	return new Response(data, {
+	  status: 200,
+	  headers: {
+		"Content-Type": contentType(filename),
+	  },
+	});
+	// return await serveFile(request, filename);
+  }
 /**
  * 
  * @param {Request} request original request object
