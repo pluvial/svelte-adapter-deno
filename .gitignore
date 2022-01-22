@@ -3,3 +3,4 @@ node_modules
 /files
 coverage/
 .env
+.npmrc
