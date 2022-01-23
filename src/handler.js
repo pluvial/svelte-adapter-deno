@@ -1,4 +1,4 @@
-import { dirname, serveFile, fromFileUrl, join, readAll, readerFromStreamReader } from './deps.ts';
+import { dirname, fromFileUrl, join} from './deps.ts';
 
 import { App } from 'APP';
 import { manifest, prerendered } from 'MANIFEST';
@@ -17,8 +17,8 @@ const prefix = `/${manifest.appDir}/`;
  * @param {string} file it can be nested in sub folders too
  * @returns {Promise<Response>}
  */
- async function sendFile(request, path2, file) {
-	const filename = join("/src/build", path2, file);
+ async function sendFile(request, path, file) {
+	const filename = join("/src/build", path, file);
   
 	const data = await Deno.readFile(filename);
 	return new Response(data, {
@@ -34,7 +34,7 @@ const prefix = `/${manifest.appDir}/`;
  * @param {Request} request original request object
  * @returns {Promise<Response>}
  */
-export async function handler(request) {
+export default async function handler(request) {
 	// generated assets
 	const url = new URL(request.url)
 	if (url.pathname.startsWith(prefix)) {

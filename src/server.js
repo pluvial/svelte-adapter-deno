@@ -1,8 +1,8 @@
-import { handler } from './handler.js';
+import handler from './handler.js';
 
-export let path = Deno.env.get(PATH_ENV) ?? false;
-export let host = Deno.env.get(HOST_ENV) ?? '0.0.0.0';
-export let port = Deno.env.get(PORT_ENV) ?? (!path && 3000);
+let path = Deno.env.get(PATH_ENV) ?? false;
+let host = Deno.env.get(HOST_ENV) ?? '0.0.0.0';
+let port = Deno.env.get(PORT_ENV) ?? (!path && 3000);
 
 if (path) {
 	host = path.split(':')[0];
@@ -15,5 +15,3 @@ for await (const conn of server) {
 		respondWith(handler(request));
 	}
 }
-
-export { server };

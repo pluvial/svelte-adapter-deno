@@ -18,6 +18,7 @@ const files = fileURLToPath(new URL('./files', import.meta.url));
 export default function ({
 	out = 'build',
 	precompress,
+	serverFile,
 	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
 	esbuild: esbuildConfig,
 	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
@@ -63,15 +64,21 @@ export default function ({
 				}
 			});
 
+			if(!serverFile) {
+				builder.copy(`${files}/server.js`, `${out}/server.js`)
+			} else {
+				builder.log(`${out}/handler exports default handler which accepts Request and returns Response`)
+			}
+
 			/** @type {BuildOptions} */
 			const defaultOptions = {
 				entryPoints: [`${tmp}/index.js`],
-				outfile: `${out}/index.js`,
+				outfile: `${out}/handler.js`,
 				bundle: true,
 				// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
 				format: 'esm',
-				// platform: 'browser'
-				platform: 'neutral',
+				platform: 'browser',
+				// platform: 'neutral',
 				// inject: [join(dirs.files, 'shims.js')],
 				sourcemap: 'external'
 			};
