@@ -54,7 +54,7 @@ export default function ({
 
 			builder.log.minor('Building server');
 
-			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
+			builder.copy(`${files}/handler.js`, `${tmp}/handler.js`, {
 				replace: {
 					APP: './server/app.js',
 					MANIFEST: './manifest.js',
@@ -72,7 +72,7 @@ export default function ({
 
 			/** @type {BuildOptions} */
 			const defaultOptions = {
-				entryPoints: [`${tmp}/index.js`],
+				entryPoints: [`${tmp}/handler.js`],
 				outfile: `${out}/handler.js`,
 				bundle: true,
 				// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
