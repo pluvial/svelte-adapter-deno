@@ -1,14 +1,14 @@
-# svelte-adapter-deno
+# svelte-adapter-deno-mini
 
-[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates a standalone Deno server.
+[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates a standalone Deno server / request handler.
 
 ## Usage
 
-Install with `npm i -D svelte-adapter-deno`, then add the adapter to your `svelte.config.js`:
+Install with `npm i -D svelte-adapter-deno-mini`, then add the adapter to your `svelte.config.js`:
 
 ```js
 // svelte.config.js
-import adapter from 'svelte-adapter-deno';
+import adapter from 'svelte-adapter-deno-mini';
 
 export default {
   kit: {
@@ -51,7 +51,11 @@ Additionally, `--no-check` can be used if deno complains while typechecking upst
 
 ### out
 
-The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-env --allow-read --allow-net build/index.js` would start the server locally after it has been created.
+The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-env --allow-read --allow-net build/server.js` would start the server locally after it has been created.
+
+### serverFile
+
+You can provide your own server file and use `build/handler.js` to handle sveltekit requests. if this option not provided, `build/server.js` will be created
 
 ### precompress
 
@@ -94,8 +98,8 @@ The default options for this version are as follows:
 
 ```js
 {
-  entryPoints: ['.svelte-kit/deno/index.js'],
-  outfile: 'build/index.js',
+  entryPoints: ['.svelte-kit/deno/handler.js'],
+  outfile: 'build/handler.js',
   bundle: true,
   format: 'esm',
   platform: 'neutral',
