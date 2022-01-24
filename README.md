@@ -25,15 +25,15 @@ After building the server (`npm run build`), use the following command to start:
 
 ```sh
 # with the default build directory
-deno run --allow-env --allow-read --allow-net build/index.js
+deno run --allow-env --allow-read --allow-net build/server.js
 
 # with a custom build directory
-deno run --allow-env --allow-read --allow-net path/to/build/index.js
+deno run --allow-env --allow-read --allow-net path/to/build/server.js
 ```
+You should edit server file to change path and hostname
 
 The server needs at least the following permissions to run:
 
-- `allow-env` - allow environment access, to support runtime configuration via runtime variables (can be further restricted to include just the necessary variables)
 - `allow-read` - allow file system read access (can be further restricted to include just the necessary directories)
 - `allow-net` - allow network access (can be further restricted to include just the necessary domains)
 
@@ -51,7 +51,7 @@ Additionally, `--no-check` can be used if deno complains while typechecking upst
 
 ### out
 
-The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-env --allow-read --allow-net build/server.js` would start the server locally after it has been created.
+The directory to build the server to. It defaults to `build` — i.e. `deno run --allow-read --allow-net build/server.js` would start the server locally after it has been created.
 
 ### serverFile
 

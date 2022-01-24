@@ -1,12 +1,13 @@
 import { dirname, fromFileUrl, join} from './deps.ts';
 
+window.navigator.userAgent = []
+
+
 import { App } from 'APP';
 import { manifest, prerendered } from 'MANIFEST';
 import { contentType } from './content-types';
 
 const app = new App(manifest);
-
-const __dirname = dirname(fromFileUrl(import.meta.url));
 
 const prefix = `/${manifest.appDir}/`;
 
@@ -27,7 +28,6 @@ const prefix = `/${manifest.appDir}/`;
 		"Content-Type": contentType(filename),
 	  },
 	});
-	// return await serveFile(request, filename);
   }
 /**
  * 

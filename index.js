@@ -57,17 +57,14 @@ export default function ({
 			builder.copy(`${files}/handler.js`, `${tmp}/handler.js`, {
 				replace: {
 					APP: './server/app.js',
-					MANIFEST: './manifest.js',
-					PATH_ENV: JSON.stringify(path_env),
-					HOST_ENV: JSON.stringify(host_env),
-					PORT_ENV: JSON.stringify(port_env)
+					MANIFEST: './manifest.js'
 				}
 			});
 
 			if(!serverFile) {
 				builder.copy(`${files}/server.js`, `${out}/server.js`)
 			} else {
-				builder.log(`${out}/handler exports default handler which accepts Request and returns Response`)
+				builder.log(`${out}/handler.js exports default handler which accepts Request and returns Promise<Response>`)
 			}
 
 			/** @type {BuildOptions} */
@@ -80,7 +77,7 @@ export default function ({
 				platform: 'browser',
 				// platform: 'neutral',
 				// inject: [join(dirs.files, 'shims.js')],
-				sourcemap: 'external'
+				// sourcemap: 'external'
 			};
 			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;
 			await esbuild.build(buildOptions);
