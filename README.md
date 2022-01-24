@@ -1,14 +1,14 @@
-# svelte-adapter-deno-mini
+# svelte-adapter-deno
 
 [Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates a standalone Deno server / request handler.
 
 ## Usage
 
-Install with `npm i -D svelte-adapter-deno-mini`, then add the adapter to your `svelte.config.js`:
+Install with `npm i -D svelte-adapter-deno`, then add the adapter to your `svelte.config.js`:
 
 ```js
 // svelte.config.js
-import adapter from 'svelte-adapter-deno-mini';
+import adapter from 'svelte-adapter-deno';
 
 export default {
   kit: {
@@ -30,10 +30,10 @@ deno run --allow-env --allow-read --allow-net build/server.js
 # with a custom build directory
 deno run --allow-env --allow-read --allow-net path/to/build/server.js
 ```
-You should edit server file to change path and hostname
 
 The server needs at least the following permissions to run:
 
+-- `allow-env` - allow environment access, to support runtime configuration via runtime variables (can be further restricted to include just the necessary variables)
 - `allow-read` - allow file system read access (can be further restricted to include just the necessary directories)
 - `allow-net` - allow network access (can be further restricted to include just the necessary domains)
 
@@ -56,6 +56,9 @@ The directory to build the server to. It defaults to `build` — i.e. `deno run 
 ### serverFile
 
 You can provide your own server file and use `build/handler.js` to handle sveltekit requests. if this option not provided, `build/server.js` will be created
+
+### filesPrefix
+The prefix for static and client side files (TODO: better description)
 
 ### precompress
 
@@ -101,6 +104,8 @@ The default options for this version are as follows:
   entryPoints: ['.svelte-kit/deno/handler.js'],
   outfile: 'build/handler.js',
   bundle: true,
+  serverFile: undefined,
+  filesPrefix: './',
   format: 'esm',
   platform: 'neutral',
   sourcemap: 'external'

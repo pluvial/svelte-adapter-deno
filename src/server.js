@@ -1,7 +1,6 @@
-import handler from './build/handler.js';
+import handler from './handler.js';
 
 const port = Deno.env.get('PORT') ?? 3000;
-
 const hostname = Deno.env.get('HOST') ?? 'localhost';
 
 const server = Deno.listen({ port, hostname });

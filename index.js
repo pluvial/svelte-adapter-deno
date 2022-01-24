@@ -19,6 +19,7 @@ export default function ({
 	out = 'build',
 	precompress,
 	serverFile,
+	filesPrefix = './',
 	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
 	esbuild: esbuildConfig,
 	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
@@ -57,7 +58,8 @@ export default function ({
 			builder.copy(`${files}/handler.js`, `${tmp}/handler.js`, {
 				replace: {
 					APP: './server/app.js',
-					MANIFEST: './manifest.js'
+					MANIFEST: './manifest.js',
+					FILES_PREFIX: filesPrefix
 				}
 			});
 
@@ -77,7 +79,7 @@ export default function ({
 				platform: 'browser',
 				// platform: 'neutral',
 				// inject: [join(dirs.files, 'shims.js')],
-				// sourcemap: 'external'
+				sourcemap: 'external'
 			};
 			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;
 			await esbuild.build(buildOptions);

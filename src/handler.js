@@ -19,8 +19,8 @@ const prefix = `/${manifest.appDir}/`;
  * @returns {Promise<Response>}
  */
  async function sendFile(request, path, file) {
-	const filename = join("./build", path, file);
-  
+	const filename = join(FILES_PREFIX, path, file);
+
 	const data = await Deno.readFile(filename);
 	return new Response(data, {
 	  status: 200,
@@ -64,11 +64,7 @@ export default async function handler(request) {
 		return await sendFile(request, 'prerendered', file);
 	}
 
-	// dynamically-generated pages
-
 	const rendered = await app.render(request);
-
-
 
 	if (rendered) {
 		return rendered
