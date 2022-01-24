@@ -18,7 +18,7 @@ const prefix = `/${manifest.appDir}/`;
  * @returns {Promise<Response>}
  */
  async function sendFile(request, path, file) {
-	const filename = join("/src/build", path, file);
+	const filename = join("./build", path, file);
   
 	const data = await Deno.readFile(filename);
 	return new Response(data, {
