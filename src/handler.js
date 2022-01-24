@@ -1,5 +1,6 @@
 import { dirname, fromFileUrl, join} from './deps.ts';
 
+// to prevent an error
 window.navigator.userAgent = []
 
 
@@ -18,7 +19,7 @@ const prefix = `/${manifest.appDir}/`;
  * @param {string} file it can be nested in sub folders too
  * @returns {Promise<Response>}
  */
- async function sendFile(request, path, file) {
+ async function sendFile(path, file) {
 	const filename = join('FILES_PREFIX', path, file);
 
 	const data = await Deno.readFile(filename);
@@ -38,7 +39,7 @@ export default async function handler(request) {
 	// generated assets
 	const url = new URL(request.url)
 	if (url.pathname.startsWith(prefix)) {
-		const response = await sendFile(request, 'client', url.pathname)
+		const response = await sendFile('client', url.pathname)
 		response.headers.append('cache-control', 'public, immutable, max-age=31536000')
 		return response;
 	}
@@ -54,14 +55,14 @@ export default async function handler(request) {
 	}
 
 	if (manifest.assets.has(file)) {
-		return await sendFile(request, 'static', file);
+		return await sendFile('static', file);
 	}
 	file += '/index.html';
 	if (manifest.assets.has(file)) {
-		return await sendFile(request, 'static', file);
+		return await sendFile('static', file);
 	}
 	if (prerendered.has(pathname || '/')) {
-		return await sendFile(request, 'prerendered', file);
+		return await sendFile('prerendered', file);
 	}
 
 	const rendered = await app.render(request);
