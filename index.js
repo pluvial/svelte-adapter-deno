@@ -55,13 +55,17 @@ export default function ({
 
 			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
 				replace: {
-					APP: './server/app.js',
-					MANIFEST: './manifest.js',
 					PATH_ENV: JSON.stringify(path_env),
 					HOST_ENV: JSON.stringify(host_env),
 					PORT_ENV: JSON.stringify(port_env)
 				}
 			});
+			builder.copy(`${files}/handler.js`, `${tmp}/handler.js`, {
+				replace: {
+					APP: './server/app.js',
+					MANIFEST: './manifest.js',
+				}
+			})
 
 			/** @type {BuildOptions} */
 			const defaultOptions = {
