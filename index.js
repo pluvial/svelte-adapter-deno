@@ -19,7 +19,7 @@ export default function ({
 	out = 'build',
 	precompress,
 	serverFile,
-	filesPrefix = './',
+	filesPrefix = '/src/build/',
 	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
 	esbuild: esbuildConfig,
 	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))

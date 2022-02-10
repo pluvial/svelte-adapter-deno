@@ -22,11 +22,11 @@ const prefix = `/${manifest.appDir}/`;
  async function sendFile(path, file) {
 	const filename = join('FILES_PREFIX', path, file);
 
-	const data = await Deno.readFile(filename);
-	return new Response(data, {
+	const data = await fetch(filename);
+	return new Response(data.body, {
 	  status: 200,
 	  headers: {
-		"Content-Type": contentType(filename),
+			"Content-Type": contentType(filename),
 	  },
 	});
   }
