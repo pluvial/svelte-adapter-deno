@@ -1,10 +1,10 @@
 {
-	"name": "svelte-adapter-deno-mini",
+	"name": "svelte-adapter-deno-deploy",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/TheHadiAhmadi/svelte-adapter-deno.git"
 	},
-	"version": "0.5.6",
+	"version": "0.5.7",
 	"type": "module",
 	"exports": {
 		"import": "./index.js"
