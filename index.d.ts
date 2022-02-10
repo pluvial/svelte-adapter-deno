@@ -5,7 +5,6 @@ interface AdapterOptions {
 	out?: string;
 	precompress?: boolean;
 	serverFile?: string,
-	filesPrefix?: string,
 	env?: {
 		path?: string;
 		host?: string;

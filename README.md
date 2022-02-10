@@ -1,6 +1,6 @@
 # svelte-adapter-deno-deploy
 
-[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates a standalone Deno server / request handler.
+[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates server for Deno Deploy.
 
 ## Usage
 
@@ -12,11 +12,7 @@ import adapter from 'svelte-adapter-deno-deploy';
 
 export default {
   kit: {
-    adapter: adapter({
-      // default options are shown
-      out: 'build',
-      deps: './deps.ts' // (relative to adapter-deno package)
-    })
+    adapter: adapter()
   }
 };
 ```
@@ -56,9 +52,6 @@ The directory to build the server to. It defaults to `build` — i.e. `deno run 
 ### serverFile
 
 You can provide your own server file and use `build/handler.js` to handle sveltekit requests. if this option not provided, `build/server.js` will be created
-
-### filesPrefix
-The prefix for static and client side files (TODO: better description)
 
 ### precompress
 

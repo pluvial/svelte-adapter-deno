@@ -19,7 +19,6 @@ export default function ({
 	out = 'build',
 	precompress,
 	serverFile,
-	filesPrefix = '/src/build/',
 	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
 	esbuild: esbuildConfig,
 	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
@@ -59,7 +58,7 @@ export default function ({
 				replace: {
 					APP: './server/app.js',
 					MANIFEST: './manifest.js',
-					FILES_PREFIX: filesPrefix
+					FILES_PREFIX: `./${out}`
 				}
 			});
 

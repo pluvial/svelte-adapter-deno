@@ -1,4 +1,4 @@
-import { dirname, fromFileUrl, join} from './deps.ts';
+import { dirname, fromFileUrl, serveFile, join} from './deps.ts';
 
 // to prevent an error
 window.navigator.userAgent = []
@@ -15,31 +15,13 @@ const prefix = `/${manifest.appDir}/`;
 /**
  * 
  * @param {Request} request original request object
- * @param {string} path folder which contains file
- * @param {string} file it can be nested in sub folders too
- * @returns {Promise<Response>}
- */
- async function sendFile(path, file) {
-	const filename = join('FILES_PREFIX', path, file);
-
-	const data = await fetch(filename);
-	return new Response(data.body, {
-	  status: 200,
-	  headers: {
-			"Content-Type": contentType(filename),
-	  },
-	});
-  }
-/**
- * 
- * @param {Request} request original request object
  * @returns {Promise<Response>}
  */
 export default async function handler(request) {
 	// generated assets
 	const url = new URL(request.url)
 	if (url.pathname.startsWith(prefix)) {
-		const response = await sendFile('client', url.pathname)
+		const response = await serveFile(request, join('FILES_PREFIX', 'client', url.pathname))
 		response.headers.append('cache-control', 'public, immutable, max-age=31536000')
 		return response;
 	}
@@ -55,14 +37,14 @@ export default async function handler(request) {
 	}
 
 	if (manifest.assets.has(file)) {
-		return await sendFile('static', file);
+		return await serveFile(request, join('FILES_PREFIX', 'static', file));
 	}
 	file += '/index.html';
 	if (manifest.assets.has(file)) {
-		return await sendFile('static', file);
+		return await serveFile(request, join('FILES_PREFIX', 'static', file));
 	}
 	if (prerendered.has(pathname || '/')) {
-		return await sendFile('prerendered', file);
+		return await serveFile(request, join('FILES_PREFIX', 'prerendered', file));
 	}
 
 	const rendered = await app.render(request);
