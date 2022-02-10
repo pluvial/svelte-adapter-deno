@@ -31,6 +31,47 @@ deno run --allow-env --allow-read --allow-net build/index.js
 deno run --allow-env --allow-read --allow-net path/to/build/index.js
 ```
 
+You can use this github action to automatically deploy your app in deno deploy
+
+.github/workflows/deploy.yml
+
+```yml
+name: Deploy
+
+on: [push]
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Running npm install
+        run: npm install
+
+      - name: Build site
+        run: npm run build
+
+      - name: Remove node_modules
+        run: rm -rf node_modules
+
+      - name: Deploy to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: <YOUR PROJECT NAME>
+          entrypoint: '{out}/index.js' # same as `out` option in config
+          root: '{out}'
+```
+
 The server needs at least the following permissions to run:
 
 - `allow-env` - allow environment access, to support runtime configuration via runtime variables (can be further restricted to include just the necessary variables)
