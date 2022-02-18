@@ -17,7 +17,7 @@ const prefix = `/${manifest.appDir}/`;
  * @param {Request} request original request object
  * @returns {Promise<Response>}
  */
-export default async function handler(request) {
+export default async function handler(request, platform = {}) {
 	// generated assets
 	const url = new URL(request.url)
 	if (url.pathname.startsWith(prefix)) {
@@ -47,7 +47,7 @@ export default async function handler(request) {
 		return await serveFile(request, join('FILES_PREFIX', 'prerendered', file));
 	}
 
-	const rendered = await app.render(request);
+	const rendered = await app.render(request, { platform } );
 
 	if (rendered) {
 		return rendered
