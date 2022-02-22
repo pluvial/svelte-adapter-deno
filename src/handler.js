@@ -1,10 +1,10 @@
 import { dirname, fromFileUrl, join, readAll, readerFromStreamReader } from './deps.ts';
 import { contentType } from './content-types.js';
 
-import { App } from 'APP';
+import { Server } from 'SERVER';
 import { manifest, prerendered } from 'MANIFEST';
 
-const app = new App(manifest);
+const server = new Server(manifest);
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
@@ -57,7 +57,7 @@ export async function handler(ctx, next) {
 		return await next();
 	}
 
-	const rendered = await app.render({
+	const rendered = await server.respond({
 		method: req.method,
 		headers: headers_to_object(req.headers), // TODO: what about repeated headers, i.e. string[]
 		url: req.url,
