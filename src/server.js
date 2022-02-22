@@ -8,14 +8,8 @@ console.log(`server is running at ${hostname}:${port}`);
 
 for await (const conn of server) {
 	for await (const { request, respondWith } of Deno.serveHttp(conn)) {
-		respondWith(handler(request, {
-			// example
-			db: {
-				get() { console.log("Get All")},
-				insert(data) { console.log('insert',  data)},
-				update(filter, data) { console.log("update",  filter, data)},
-				delete(filter) { console.log("Delete: ", filter)}
-			}
+		respondWith(handler(request, { 
+			/*everything passed here, will be available as `platform` in sveltekit*/ 
 		}));
 	}
 }
