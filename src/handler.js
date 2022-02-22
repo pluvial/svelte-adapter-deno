@@ -4,11 +4,11 @@ import { dirname, fromFileUrl, serveFile, join} from './deps.ts';
 window.navigator.userAgent = []
 
 
-import { App } from 'APP';
+import { Server } from 'SERVER';
 import { manifest, prerendered } from 'MANIFEST';
 import { contentType } from './content-types';
 
-const app = new App(manifest);
+const server = new Server(manifest);
 
 const prefix = `/${manifest.appDir}/`;
 
@@ -47,7 +47,7 @@ export default async function handler(request, platform = {}) {
 		return await serveFile(request, join('FILES_PREFIX', 'prerendered', file));
 	}
 
-	const rendered = await app.render(request, { platform } );
+	const rendered = await server.respond(request, { platform } );
 
 	if (rendered) {
 		return rendered
