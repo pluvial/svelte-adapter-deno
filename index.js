@@ -56,7 +56,7 @@ export default function ({
 
 			builder.copy(`${files}/handler.js`, `${tmp}/handler.js`, {
 				replace: {
-					APP: './server/app.js',
+					SERVER: './server/app.js',
 					MANIFEST: './manifest.js',
 					FILES_PREFIX: `./${out}`
 				}
