@@ -55,7 +55,7 @@ export default function ({
 
 			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
 				replace: {
-					APP: './server/app.js',
+					SERVER: './server/app.js',
 					MANIFEST: './manifest.js',
 					PATH_ENV: JSON.stringify(path_env),
 					HOST_ENV: JSON.stringify(host_env),
