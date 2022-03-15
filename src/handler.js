@@ -1,5 +1,4 @@
 import { dirname, fromFileUrl, join } from './deps.ts';
-import { contentType } from './content-types.js';
 
 import { Server } from 'SERVER';
 import { manifest, prerendered } from 'MANIFEST';
@@ -13,13 +12,9 @@ const prefix = `/${manifest.appDir}/`;
 export async function handler(ctx, next) {
 	// generated assets
 	if (ctx.request.url.pathname.startsWith(prefix)) {
+		ctx.response.headers.set('cache-control', 'public, immutable, max-age=31536000');
 		return await ctx.send({
-			root: join(__dirname, 'client'),
-			headers: {
-				'cache-control': 'public, immutable, max-age=31536000',
-				// 'content-type': res.headers.get('content-type')
-				'content-type': contentType(ctx.request.url.pathname)
-			}
+			root: join(__dirname, 'client')
 		});
 	}
 
