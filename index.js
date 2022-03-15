@@ -1,4 +1,5 @@
 import { createReadStream, createWriteStream, existsSync, statSync, writeFileSync } from 'fs';
+import { posix } from 'path';
 import { pipeline } from 'stream';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
@@ -35,17 +36,14 @@ export default function ({
 			builder.writeClient(`${out}/client`);
 			builder.writeServer(`${tmp}/server`);
 			builder.writeStatic(`${out}/static`);
+			builder.writePrerendered(`${out}/prerendered`);
 
-			builder.log.minor('Prerendering static pages');
-			const { paths } = await builder.prerender({
-				dest: `${out}/prerendered`
-			});
-
+			const relativePath = posix.relative(tmp, builder.getServerDirectory());
 			writeFileSync(
 				`${tmp}/manifest.js`,
 				`export const manifest = ${builder.generateManifest({
-					relativePath: './server'
-				})};\n\nexport const prerendered = new Set(${JSON.stringify(paths)});\n`
+					relativePath
+				})};\n\nexport const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});\n`
 			);
 
 			builder.log.minor(`Copying deps.ts: ${deps}`);
@@ -55,7 +53,7 @@ export default function ({
 
 			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
 				replace: {
-					SERVER: './server/index.js',
+					SERVER: `${relativePath}/index.js`,
 					MANIFEST: './manifest.js',
 					PATH_ENV: JSON.stringify(path_env),
 					HOST_ENV: JSON.stringify(host_env),
@@ -72,7 +70,6 @@ export default function ({
 				format: 'esm',
 				// platform: 'browser'
 				platform: 'neutral',
-				// inject: [join(dirs.files, 'shims.js')],
 				sourcemap: 'external'
 			};
 			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;

@@ -4,7 +4,7 @@
 		"type": "git",
 		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
 	},
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"type": "module",
 	"exports": {
 		"import": "./index.js"
@@ -25,7 +25,7 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"esbuild": "^0.14.23",
+		"esbuild": "^0.14.27",
 		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
@@ -33,14 +33,14 @@
 		"@rollup/plugin-json": "^4.1.0",
 		"@rollup/plugin-node-resolve": "^13.1.3",
 		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.6.0",
-		"@sveltejs/kit": "^1.0.0-next.216",
-		"@typescript-eslint/eslint-plugin": "^5.13.0",
-		"@typescript-eslint/parser": "^5.13.0",
-		"eslint": "^8.10.0",
+		"@sveltejs/kit": "^1.0.0-next.297",
+		"@typescript-eslint/eslint-plugin": "^5.15.0",
+		"@typescript-eslint/parser": "^5.15.0",
+		"eslint": "^8.11.0",
 		"eslint-plugin-import": "^2.25.4",
 		"eslint-plugin-svelte3": "^3.4.1",
 		"prettier": "^2.5.1",
-		"rollup": "^2.68.0",
-		"typescript": "^4.5.5"
+		"rollup": "^2.70.1",
+		"typescript": "^4.6.2"
 	}
 }
