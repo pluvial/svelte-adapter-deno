@@ -1,6 +1,6 @@
 # svelte-adapter-deno
 
-[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that generates a standalone Deno server.
+[Adapter](https://kit.svelte.dev/docs/adapters) for SvelteKit apps that generates a standalone Deno server.
 
 ## Usage
 
