@@ -31,14 +31,20 @@ deno run --allow-env --allow-read --allow-net build/index.js
 deno run --allow-env --allow-read --allow-net path/to/build/index.js
 ```
 
-You can use this github action to automatically deploy your app in deno deploy
+You can use the [deployctl](https://github.com/denoland/deployctl/blob/main/action/README.md) GitHub Action to automatically deploy your app in Deno Deploy:
 
-.github/workflows/deploy.yml
+.github/workflows/ci.yml
 
 ```yml
-name: Deploy
+name: ci
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -52,24 +58,35 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: Running npm install
-        run: npm install
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install pnpm and node_modules
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          run_install: true
 
       - name: Build site
-        run: npm run build
-
-      - name: Remove node_modules
-        run: rm -rf node_modules
+        run: pnpm build
+        working-directory: '<root>' # if necessary, should contain {out}
 
       - name: Deploy to Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: <YOUR PROJECT NAME>
           entrypoint: '{out}/index.js' # same as `out` option in config
-          root: '{out}'
+          root: '<root>' # if necessary
 ```
 
 The server needs at least the following permissions to run:
