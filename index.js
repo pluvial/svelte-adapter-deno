@@ -1,4 +1,5 @@
 import { createReadStream, createWriteStream, existsSync, statSync, writeFileSync } from 'fs';
+import { builtinModules } from 'module';
 import { posix } from 'path';
 import { pipeline } from 'stream';
 import { fileURLToPath } from 'url';
@@ -61,12 +62,15 @@ export default function ({
 				}
 			});
 
+			// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
+			const external = [...builtinModules];
+
 			/** @type {BuildOptions} */
 			const defaultOptions = {
 				entryPoints: [`${tmp}/index.js`],
 				outfile: `${out}/index.js`,
 				bundle: true,
-				// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
+				external,
 				format: 'esm',
 				// platform: 'browser'
 				platform: 'neutral',
