@@ -21,7 +21,12 @@ async function serveDirectory(path, max_age, immutable = false) {
 
 async function ssr(ctx) {
 	const request = ctx.request.originalRequest.request;
-	const response = await server.respond(request);
+	const response = await server.respond(request, {
+		getClientAddress() {
+			// TODO: revisit if it doesn't work with proxy
+			return ctx.request.ip;
+		}
+	});
 	ctx.response.status = response.status;
 	ctx.response.headers = response.headers;
 	ctx.response.body = response.body;
