@@ -1,4 +1,4 @@
-import { dirname, existsSync, fromFileUrl, join } from './deps.ts';
+import { dirname, exists, fromFileUrl, join } from './deps.ts';
 
 import { Server } from 'SERVER';
 import { manifest } from 'MANIFEST';
@@ -7,8 +7,9 @@ const server = new Server(manifest);
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
-function serveDirectory(path, max_age, immutable = false) {
-	if (!existsSync(path)) {
+async function serveDirectory(path, max_age, immutable = false) {
+	// need to use async exists due to existsSync not working on Deno Deploy
+	if (!(await exists(path))) {
 		return false;
 	}
 	const cacheControl = `public, ${immutable ? 'immutable' : ''} max-age: ${max_age}`;
@@ -27,9 +28,11 @@ async function ssr(ctx) {
 }
 
 const handlers = [
-	serveDirectory(join(__dirname, 'client'), 31536000, true),
-	serveDirectory(join(__dirname, 'static'), 0),
-	serveDirectory(join(__dirname, 'prerendered'), 0),
+	...(await Promise.all([
+		serveDirectory(join(__dirname, 'client'), 31536000, true),
+		serveDirectory(join(__dirname, 'static'), 0),
+		serveDirectory(join(__dirname, 'prerendered'), 0)
+	])),
 	ssr
 ].filter(Boolean);
 

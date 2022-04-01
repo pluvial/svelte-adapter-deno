@@ -72,7 +72,8 @@ export default function ({
 				format: 'esm',
 				// platform: 'browser'
 				platform: 'neutral',
-				sourcemap: 'external'
+				sourcemap: 'external',
+				target: 'esnext'
 			};
 			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;
 			await esbuild.build(buildOptions);
