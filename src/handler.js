@@ -1,55 +1,46 @@
-import { dirname, fromFileUrl, join } from './deps.ts';
+import { dirname, existsSync, fromFileUrl, join } from './deps.ts';
 
 import { Server } from 'SERVER';
-import { manifest, prerendered } from 'MANIFEST';
+import { manifest } from 'MANIFEST';
 
 const server = new Server(manifest);
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
-const prefix = `/${manifest.appDir}/`;
-
-export async function handler(ctx, next) {
-	// generated assets
-	if (ctx.request.url.pathname.startsWith(prefix)) {
-		ctx.response.headers.set('cache-control', 'public, immutable, max-age=31536000');
-		return await ctx.send({
-			root: join(__dirname, 'client')
-		});
+function serveDirectory(path, max_age, immutable = false) {
+	if (!existsSync(path)) {
+		return false;
 	}
+	const cacheControl = `public, ${immutable ? 'immutable' : ''} max-age: ${max_age}`;
+	return (ctx) => {
+		ctx.response.headers.set('cache-control', cacheControl);
+		return ctx.send({ root: path, extensions: ['.html'], index: 'index.html' });
+	};
+}
 
-	// prerendered pages and index.html files
-	const pathname = ctx.request.url.pathname.replace(/\/$/, '');
-	let file = pathname.substring(1) || 'index';
-
-	try {
-		file = decodeURIComponent(file);
-	} catch (err) {
-		// ignore
-	}
-
-	if (manifest.assets.has(file)) {
-		return await ctx.send({ root: join(__dirname, 'static') });
-	}
-	const file_index_html = file + '/index.html';
-	if (manifest.assets.has(file_index_html)) {
-		return await ctx.send({ path: file_index_html, root: join(__dirname, 'static') });
-	}
-	const file_html = file + '.html';
-	if (prerendered.has(pathname || '/')) {
-		return await ctx.send({ path: file_html, root: join(__dirname, 'prerendered') });
-	}
-
-	// dynamically-generated pages
+async function ssr(ctx) {
 	const request = ctx.request.originalRequest.request;
-	try {
-		const response = await server.respond(request);
-		ctx.response.status = response.status;
-		ctx.response.headers = response.headers;
-		ctx.response.body = response.body;
-	} catch (err) {
-		console.error(err);
-		ctx.response.status = 404;
-		ctx.response.body = 'Not found';
+	const response = await server.respond(request);
+	ctx.response.status = response.status;
+	ctx.response.headers = response.headers;
+	ctx.response.body = response.body;
+}
+
+const handlers = [
+	serveDirectory(join(__dirname, 'client'), 31536000, true),
+	serveDirectory(join(__dirname, 'static'), 0),
+	serveDirectory(join(__dirname, 'prerendered'), 0),
+	ssr
+].filter(Boolean);
+
+export async function handler(ctx) {
+	for (const handle of handlers) {
+		try {
+			return await handle(ctx);
+		} catch (error) {
+			// fall-through to next handler
+		}
 	}
+	ctx.response.status = 404;
+	ctx.response.body = 'Not found';
 }

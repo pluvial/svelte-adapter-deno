@@ -42,9 +42,7 @@ export default function ({
 			const relativePath = posix.relative(tmp, builder.getServerDirectory());
 			writeFileSync(
 				`${tmp}/manifest.js`,
-				`export const manifest = ${builder.generateManifest({
-					relativePath
-				})};\n\nexport const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});\n`
+				`export const manifest = ${builder.generateManifest({ relativePath })};\n`
 			);
 
 			builder.log.minor(`Copying deps.ts: ${deps}`);
