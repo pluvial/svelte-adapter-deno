@@ -17,14 +17,14 @@
 		"@playwright/test": "^1.20.0",
 		"@sveltejs/kit": "next",
 		"@types/cookie": "^0.4.1",
-		"@typescript-eslint/eslint-plugin": "^5.15.0",
-		"@typescript-eslint/parser": "^5.15.0",
+		"@typescript-eslint/eslint-plugin": "^5.17.0",
+		"@typescript-eslint/parser": "^5.17.0",
 		"eslint": "^8.11.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^3.2.1",
 		"prettier": "^2.5.1",
 		"prettier-plugin-svelte": "^2.5.0",
-		"svelte": "^3.46.0",
+		"svelte": "^3.46.6",
 		"svelte-adapter-deno": "workspace:*",
 		"svelte-check": "^2.4.6",
 		"svelte-preprocess": "^4.10.1",
@@ -33,7 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@fontsource/fira-mono": "^4.5.4",
+		"@fontsource/fira-mono": "^4.5.7",
 		"@lukeed/uuid": "^2.0.0",
 		"cookie": "^0.4.1"
 	}
