@@ -5,16 +5,19 @@ import { manifest } from 'MANIFEST';
 
 const server = new Server(manifest);
 
+await server.init({ env: Deno.env.toObject() });
+
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
-async function serveDirectory(path, max_age, immutable = false) {
+async function serveDirectory(path, client = false) {
 	// need to use async exists due to existsSync not working on Deno Deploy
 	if (!(await exists(path))) {
 		return false;
 	}
-	const cacheControl = `public, ${immutable ? 'immutable' : ''} max-age: ${max_age}`;
 	return (ctx) => {
-		ctx.response.headers.set('cache-control', cacheControl);
+		if (client && ctx.request.url.pathname.startsWith(`/${manifest.appDir}/immutable/`)) {
+			ctx.response.headers.set('cache-control', 'public,max-age=31536000,immutable');
+		}
 		return ctx.send({ root: path, extensions: ['.html'], index: 'index.html' });
 	};
 }
@@ -34,9 +37,8 @@ async function ssr(ctx) {
 
 const handlers = [
 	...(await Promise.all([
-		serveDirectory(join(__dirname, 'client'), 31536000, true),
-		serveDirectory(join(__dirname, 'static'), 0),
-		serveDirectory(join(__dirname, 'prerendered'), 0)
+		serveDirectory(join(__dirname, 'client'), true),
+		serveDirectory(join(__dirname, 'prerendered'))
 	])),
 	ssr
 ].filter(Boolean);
