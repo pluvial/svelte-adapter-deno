@@ -25,22 +25,22 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"esbuild": "^0.15.8",
+		"esbuild": "^0.15.12",
 		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^22.0.2",
-		"@rollup/plugin-json": "^4.1.0",
-		"@rollup/plugin-node-resolve": "^14.1.0",
+		"@rollup/plugin-commonjs": "^23.0.0",
+		"@rollup/plugin-json": "^5.0.0",
+		"@rollup/plugin-node-resolve": "^15.0.0",
 		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.6.0",
-		"@sveltejs/kit": "1.0.0-next.490",
-		"@typescript-eslint/eslint-plugin": "^5.38.0",
-		"@typescript-eslint/parser": "^5.38.0",
-		"eslint": "^8.23.1",
+		"@sveltejs/kit": "1.0.0-next.520",
+		"@typescript-eslint/eslint-plugin": "^5.40.1",
+		"@typescript-eslint/parser": "^5.40.1",
+		"eslint": "^8.25.0",
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"prettier": "^2.7.1",
-		"rollup": "^2.79.0",
-		"typescript": "^4.8.3"
+		"rollup": "^3.2.3",
+		"typescript": "^4.8.4"
 	}
 }
