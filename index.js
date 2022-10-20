@@ -1,27 +1,16 @@
-import { createReadStream, createWriteStream, existsSync, statSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { builtinModules } from 'module';
 import { posix } from 'path';
-import { pipeline } from 'stream';
 import { fileURLToPath } from 'url';
-import { promisify } from 'util';
-import zlib from 'zlib';
 import esbuild from 'esbuild';
-import glob from 'tiny-glob';
-
-const pipe = promisify(pipeline);
 
 const files = fileURLToPath(new URL('./files', import.meta.url));
 
-/**
- * @typedef {import('esbuild').BuildOptions} BuildOptions
- */
-
-/** @type {import('.')} */
+/** @type {import('.').default} */
 export default function ({
 	out = 'build',
-	precompress,
+	precompress = false,
 	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
-	esbuild: esbuildConfig,
 	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
 } = {}) {
 	return {
@@ -59,23 +48,23 @@ export default function ({
 				}
 			});
 
-			// external: Object.keys(JSON.parse(readFileSync('package.json', 'utf8')).dependencies || {}),
-			const external = [...builtinModules];
+			// const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+			const external = [
+				...builtinModules
+				// dependencies could have deep exports, so we need a regex
+				// ...Object.keys(pkg.dependencies ?? {}).map((d) => new RegExp(`^${d}(\\/.*)?$`))
+			];
 
-			/** @type {BuildOptions} */
-			const defaultOptions = {
+			await esbuild.build({
 				entryPoints: [`${tmp}/index.js`],
 				outfile: `${out}/index.js`,
 				bundle: true,
 				external,
 				format: 'esm',
-				// platform: 'browser'
-				platform: 'neutral',
+				platform: 'browser',
 				sourcemap: 'external',
 				target: 'esnext'
-			};
-			const buildOptions = esbuildConfig ? await esbuildConfig(defaultOptions) : defaultOptions;
-			await esbuild.build(buildOptions);
+			});
 
 			if (precompress) {
 				builder.log.minor('Compressing assets');
