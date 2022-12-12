@@ -4,7 +4,7 @@
 		"type": "git",
 		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
 	},
-	"version": "0.8.1",
+	"version": "0.8.2",
 	"type": "module",
 	"exports": {
 		"import": "./index.js"
@@ -25,22 +25,22 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"esbuild": "^0.15.12",
+		"esbuild": "^0.16.4",
 		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^23.0.0",
-		"@rollup/plugin-json": "^5.0.0",
-		"@rollup/plugin-node-resolve": "^15.0.0",
+		"@rollup/plugin-commonjs": "^23.0.4",
+		"@rollup/plugin-json": "^5.0.2",
+		"@rollup/plugin-node-resolve": "^15.0.1",
 		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.6.0",
-		"@sveltejs/kit": "1.0.0-next.520",
-		"@typescript-eslint/eslint-plugin": "^5.40.1",
-		"@typescript-eslint/parser": "^5.40.1",
-		"eslint": "^8.25.0",
+		"@sveltejs/kit": "1.0.0-next.582",
+		"@typescript-eslint/eslint-plugin": "^5.46.0",
+		"@typescript-eslint/parser": "^5.46.0",
+		"eslint": "^8.29.0",
 		"eslint-plugin-import": "^2.26.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"prettier": "^2.7.1",
-		"rollup": "^3.2.3",
-		"typescript": "^4.8.4"
+		"prettier": "^2.8.1",
+		"rollup": "^3.7.3",
+		"typescript": "^4.9.4"
 	}
 }
