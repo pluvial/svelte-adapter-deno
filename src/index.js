@@ -17,4 +17,4 @@ server.listen(addr).catch((err) => {
 	console.error('error', err);
 });
 
-export { server };
+export { handler, server };
