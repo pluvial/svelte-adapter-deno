@@ -1,15 +1,19 @@
 {
 	"name": "svelte-adapter-deno",
+	"version": "0.9.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pluvial/svelte-adapter-deno.git"
+		"url": "https://github.com/pluvial/svelte-adapter-deno"
 	},
-	"version": "0.8.2",
+	"license": "MIT",
 	"type": "module",
 	"exports": {
-		"import": "./index.js"
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.js"
+		},
+		"./package.json": "./package.json"
 	},
-	"main": "index.js",
 	"types": "index.d.ts",
 	"files": [
 		"files",
@@ -26,17 +30,18 @@
 		"format": "pnpm lint --write",
 		"prepublishOnly": "pnpm build"
 	},
-	"dependencies": {
-		"esbuild": "^0.17.5",
-		"tiny-glob": "^0.2.9"
-	},
 	"devDependencies": {
+		"@sveltejs/kit": "^1.3.3",
+		"prettier": "^2.8.3",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
 		"@rollup/plugin-commonjs": "^24.0.1",
 		"@rollup/plugin-json": "^6.0.0",
 		"@rollup/plugin-node-resolve": "^15.0.1",
-		"@sveltejs/kit": "^1.3.3",
-		"prettier": "^2.8.3",
-		"rollup": "^3.12.0",
-		"typescript": "^4.9.4"
+		"rollup": "^3.12.0"
+	},
+	"peerDependencies": {
+		"@sveltejs/kit": "^1.0.0"
 	}
 }
