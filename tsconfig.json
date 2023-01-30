@@ -4,10 +4,10 @@
 		"checkJs": true,
 		"noEmit": true,
 		"noImplicitAny": true,
-		"target": "es2020",
-		"module": "es2020",
+		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true
+		"module": "es2022",
+		"target": "es2022"
 	},
-	"include": ["index.js", "deps.ts", "src"]
+	"include": ["index.js", "src/**/*.js", "ambient.d.ts", "deps.ts"]
 }
