@@ -1,13 +1,13 @@
 import { Adapter } from '@sveltejs/kit';
 
+declare global {
+	const ENV_PREFIX: string;
+}
+
 export interface AdapterOptions {
 	out?: string;
 	precompress?: boolean;
-	env?: {
-		path?: string;
-		host?: string;
-		port?: string;
-	};
+	envPrefix?: string;
 	deps?: string;
 }
 

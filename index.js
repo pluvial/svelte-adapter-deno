@@ -7,12 +7,14 @@ import esbuild from 'esbuild';
 const files = fileURLToPath(new URL('./files', import.meta.url));
 
 /** @type {import('.').default} */
-export default function ({
-	out = 'build',
-	precompress = false,
-	env: { path: path_env = 'SOCKET_PATH', host: host_env = 'HOST', port: port_env = 'PORT' } = {},
-	deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
-} = {}) {
+export default function (opts = {}) {
+	const {
+		out = 'build',
+		precompress = false,
+		envPrefix = '',
+		deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
+	} = opts;
+
 	return {
 		name: 'svelte-adapter-deno',
 
@@ -21,32 +23,28 @@ export default function ({
 
 			builder.rimraf(out);
 			builder.rimraf(tmp);
+			builder.mkdirp(tmp);
 
 			builder.log.minor('Copying assets');
-			builder.writeClient(`${out}/client`);
-			builder.writeServer(`${tmp}/server`);
-			builder.writePrerendered(`${out}/prerendered`);
+			builder.writeClient(`${out}/client${builder.config.kit.paths.base}`);
+			builder.writePrerendered(`${out}/prerendered${builder.config.kit.paths.base}`);
 
-			const relativePath = posix.relative(tmp, builder.getServerDirectory());
-			writeFileSync(
-				`${tmp}/manifest.js`,
-				`export const manifest = ${builder.generateManifest({ relativePath })};\n`
-			);
-
-			builder.log.minor(`Copying deps.ts: ${deps}`);
-			builder.copy(deps, `${tmp}/deps.ts`);
+			if (precompress) {
+				builder.log.minor('Compressing assets');
+				await Promise.all([
+					builder.compress(`${out}/client`),
+					builder.compress(`${out}/prerendered`)
+				]);
+			}
 
 			builder.log.minor('Building server');
 
-			builder.copy(`${files}/index.js`, `${tmp}/index.js`, {
-				replace: {
-					SERVER: `${relativePath}/index.js`,
-					MANIFEST: './manifest.js',
-					PATH_ENV: JSON.stringify(path_env),
-					HOST_ENV: JSON.stringify(host_env),
-					PORT_ENV: JSON.stringify(port_env)
-				}
-			});
+			builder.writeServer(tmp);
+
+			writeFileSync(
+				`${tmp}/manifest.js`,
+				`export const manifest = ${builder.generateManifest({ relativePath: './' })};`
+			);
 
 			// const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 			const external = [
@@ -56,21 +54,32 @@ export default function ({
 			];
 
 			await esbuild.build({
-				entryPoints: [`${tmp}/index.js`],
-				outfile: `${out}/index.js`,
+				// entryPoints: [`${tmp}/index.js`],
+				entryPoints: [`${tmp}/index.js`, `${tmp}/manifest.js`],
+				outdir: `${out}/server`,
+				// outfile: `${out}/server/index.js`,
+				// outfile: `${out}/index.js`,
 				bundle: true,
 				external,
 				format: 'esm',
 				platform: 'browser',
 				sourcemap: 'external',
-				target: 'esnext'
+				target: 'esnext',
+				chunkNames: 'chunks/[name]-[hash]'
 			});
 
-			if (precompress) {
-				builder.log.minor('Compressing assets');
-				await builder.compress(`${out}/client`);
-				await builder.compress(`${out}/prerendered`);
-			}
+			builder.copy(files, out, {
+				replace: {
+					ENV: './env.js',
+					HANDLER: './handler.js',
+					MANIFEST: './server/manifest.js',
+					SERVER: './server/index.js',
+					ENV_PREFIX: JSON.stringify(envPrefix)
+				}
+			});
+
+			builder.log.minor(`Copying deps.ts: ${deps}`);
+			builder.copy(deps, `${out}/deps.ts`);
 		}
 	};
 }

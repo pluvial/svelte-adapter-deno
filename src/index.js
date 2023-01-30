@@ -1,9 +1,10 @@
+import { handler } from 'HANDLER';
+import { env } from 'ENV';
 import { Application } from './deps.ts';
-import { handler } from './handler.js';
 
-export const path = Deno.env.get(PATH_ENV) ?? false;
-export const host = Deno.env.get(HOST_ENV) ?? '0.0.0.0';
-export const port = Deno.env.get(PORT_ENV) ?? (!path && 3000);
+export const path = env('SOCKET_PATH', false);
+export const host = env('HOST', '0.0.0.0');
+export const port = env('PORT', !path && '3000');
 
 // TODO: add compression middleware
 const server = new Application().use(handler);
@@ -17,4 +18,4 @@ server.listen(addr).catch((err) => {
 	console.error('error', err);
 });
 
-export { handler, server };
+export { server };
