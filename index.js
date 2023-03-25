@@ -14,7 +14,8 @@ export default function (opts = {}) {
 		out = 'build',
 		precompress = false,
 		envPrefix = '',
-		deps = fileURLToPath(new URL('./deps.ts', import.meta.url))
+		deps = fileURLToPath(new URL('./deps.ts', import.meta.url)),
+		rollupHook = (options) => options,
 	} = opts;
 
 	return {
@@ -53,7 +54,7 @@ export default function (opts = {}) {
 			// we bundle the Vite output so that deployments only need
 			// their production dependencies. Anything in devDependencies
 			// will get included in the bundled code
-			const bundle = await rollup({
+			const rollupOptions = {
 				input: {
 					index: `${tmp}/index.js`,
 					manifest: `${tmp}/manifest.js`
@@ -63,7 +64,8 @@ export default function (opts = {}) {
 					// ...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`))
 				],
 				plugins: [nodeResolve({ preferBuiltins: true }), commonjs(), json()]
-			});
+			};
+			const bundle = await rollup(rollupHook(rollupOptions) || rollupOptions);
 
 			await bundle.write({
 				dir: `${out}/server`,

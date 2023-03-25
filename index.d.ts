@@ -9,6 +9,7 @@ export interface AdapterOptions {
 	precompress?: boolean;
 	envPrefix?: string;
 	deps?: string;
+	rollupHook?: (options: RollupOptions) => RollupOptions | void;
 }
 
 export default function plugin(options?: AdapterOptions): Adapter;
