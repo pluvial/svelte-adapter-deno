@@ -1,6 +1,6 @@
 {
 	"name": "svelte-adapter-deno",
-	"version": "0.9.0",
+	"version": "0.9.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/pluvial/svelte-adapter-deno"
@@ -42,6 +42,7 @@
 		"rollup": "^3.12.0"
 	},
 	"peerDependencies": {
-		"@sveltejs/kit": "^1.0.0"
-	}
+		"@sveltejs/kit": "^2.4.0"
+	},
+	"packageManager": "pnpm@9.7.0+sha256.b35018fbfa8f583668b2649e407922a721355cd81f61beeb4ac1d4258e585559"
 }
