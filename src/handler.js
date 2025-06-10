@@ -7,7 +7,7 @@ import { env, processEnv } from 'ENV';
 const server = new Server(manifest);
 const [edgeCache] = await Promise.all([
 	caches.open('deno-deploy-edge'),
-	server.init({ env: processEnv }),
+	server.init({ env: processEnv })
 ]);
 
 // TODO: check if any of these are needed
@@ -73,7 +73,40 @@ async function ssr(ctx) {
 	ctx.response.with(response);
 }
 
+// See: https://docs.deno.com/deploy/manual/edge-cache/
+async function cache(ctx, next) {
+	const cachedResponse = await edgeCache.match(ctx.request.source);
+
+	if (cachedResponse) {
+		cachedResponse.headers.set('x-deno-deploy-edge-cache', 'true');
+		ctx.response.with(cachedResponse);
+		return
+	}
+
+	await next();
+
+	// If a response returns any cache header then we cache it in the Deno Deploy edge cache.
+	// We don't need to read the contents of the Cache-Control or Expires header since the
+	// cache storage will handle that for us: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+	const responseHasCacheHeaders = ctx.response.headers.has('cache-control') || ctx.response.headers.has('expires');
+	if (responseHasCacheHeaders
+		&& ctx.response.status >= 200
+		&& ctx.response.status < 300) {
+		const response = new Response(
+			ctx.response.body,
+			{
+				status: ctx.response.status,
+				headers: ctx.response.headers,
+			}
+		);
+
+		// Important! Clone since we can't read same stream twice.
+		edgeCache.put(ctx.request.source, response.clone());
+	}
+}
+
 const handlers = [
+	cache,
 	...(await Promise.all([
 		serveDirectory(join(dir, 'client'), true),
 		serveDirectory(join(dir, 'static')),
