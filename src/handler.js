@@ -5,7 +5,10 @@ import { manifest } from 'MANIFEST';
 import { env, processEnv } from 'ENV';
 
 const server = new Server(manifest);
-await server.init({ env: processEnv });
+const [edgeCache] = await Promise.all([
+	caches.open('deno-deploy-edge'),
+	server.init({ env: processEnv }),
+]);
 
 // TODO: check if any of these are needed
 // const origin = env('ORIGIN', undefined);
@@ -22,11 +25,16 @@ async function serveDirectory(path, client = false) {
 	if (!(await exists(path))) {
 		return false;
 	}
-	return (ctx) => {
-		if (client && ctx.request.url.pathname.startsWith(`/${manifest.appDir}/immutable/`)) {
-			ctx.response.headers.set('cache-control', 'public,max-age=31536000,immutable');
+	return async (ctx, next) => {
+		try {
+			if (client && ctx.request.url.pathname.startsWith(`/${manifest.appDir}/immutable/`)) {
+				ctx.response.headers.set('cache-control', 'public,max-age=31536000,immutable');
+			}
+
+			await ctx.send({root: path, extensions: ['.html'], index: 'index.html'});
+		} catch {
+			await next();
 		}
-		return ctx.send({ root: path, extensions: ['.html'], index: 'index.html' });
 	};
 }
 
@@ -61,9 +69,8 @@ async function ssr(ctx) {
 			return ctx.request.ip;
 		}
 	});
-	ctx.response.status = response.status;
-	ctx.response.headers = response.headers;
-	ctx.response.body = response.body;
+
+	ctx.response.with(response);
 }
 
 const handlers = [
@@ -75,14 +82,4 @@ const handlers = [
 	ssr
 ].filter(Boolean);
 
-export async function handler(ctx) {
-	for (const handle of handlers) {
-		try {
-			return await handle(ctx);
-		} catch (error) {
-			// fall-through to next handler
-		}
-	}
-	ctx.response.status = 404;
-	ctx.response.body = 'Not found';
-}
+export { handlers };
